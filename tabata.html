@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabata Pro Elite - Alarma Total</title>
+    <style>
+        :root {
+            --work-bg: #d63031;
+            --rest-bg: #00b894;
+            --prep-bg: #f1c40f;
+            --dark: #1e272e;
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2d3436;
+            color: white;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden;
+        }
+
+        .viewport-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+
+        #logo-container img {
+            width: 28vw;
+            max-width: 380px;
+            margin-bottom: 3vh;
+            border-radius: 20px;
+            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
+        }
+
+        .config-card {
+            background: white;
+            padding: 40px;
+            border-radius: 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            width: 95%;
+            max-width: 650px;
+            color: #2d3436;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+        }
+
+        input {
+            width: 130px;
+            padding: 15px;
+            border-radius: 15px;
+            border: 4px solid #dfe6e9;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .status-text {
+            font-size: clamp(3rem, 8vw, 7rem);
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 6px;
+        }
+
+        .timer-display {
+            font-size: clamp(10rem, 35vw, 28rem);
+            line-height: 0.8;
+            font-weight: 900;
+            margin: 4vh 0;
+        }
+
+        .round-text {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            margin-bottom: 5vh;
+        }
+
+        .btn-start {
+            background: var(--dark);
+            color: white;
+            padding: 30px;
+            width: 100%;
+            border: none;
+            border-radius: 25px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .btn-pause, .btn-reset {
+            padding: 3vh 8vw;
+            border-radius: 25px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            min-width: 320px;
+        }
+
+        .btn-pause { background: #0984e3; color: white; box-shadow: 0 10px 0 #0762a7; }
+        .btn-reset { background: rgba(0,0,0,0.5); color: white; border: 4px solid white; }
+
+        @media (max-width: 768px) {
+            .controls { flex-direction: column; align-items: center; }
+            .btn-pause, .btn-reset { width: 95%; min-width: unset; }
+            #logo-container img { width: 60vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="viewport-center">
+        <div id="logo-container">
+            <img src="https://lh3.googleusercontent.com/d/1o5Gt-hoG1Bs7cOkMdnPgresp8qmIHSfJ" alt="Logo">
+        </div>
+
+        <div class="config-card" id="panel-config">
+            <h1 style="margin-top: 0; font-size: 3rem;"> ARTE SUAVE SC</h1>
+            <div class="input-group">
+                <label>TRABAJO (Min):</label>
+                <input type="number" id="inWork" value="5" min="0.1" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>DESCANSO (Min):</label>
+                <input type="number" id="inRest" value="2" min="0.1" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>CANTIDAD:</label>
+                <input type="number" id="inRounds" value="6" min="1">
+            </div>
+            <button class="btn-start" onclick="prepararEntrenamiento()">INICIAR</button>
+        </div>
+
+        <div id="panel-timer" style="display: none; width: 100%;">
+            <div class="status-text" id="label-status">LISTO</div>
+            <div class="timer-display" id="display-time">00:00</div>
+            <div class="round-text" id="label-round">ROUND: 1 </div>
+            
+            <div class="controls">
+                <button class="btn-pause" id="btn-pausa" onclick="togglePausa()">PAUSA</button>
+                <button class="btn-reset" onclick="location.reload()">SALIR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let interval;
+        let timeSecs;
+        let roundActual = 1;
+        let roundTotal;
+        let isPaused = false;
+        let audioCtx;
+
+        function playSound(freq, duration) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "square";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        // FUNCIÓN UNIFICADA DE ALARMA (Pitidos persistentes)
+        function ejecutarAlarmaPersistente(segundos, callback) {
+            let count = 0;
+            const originalColor = document.body.style.backgroundColor;
+            const alarmanInt = setInterval(() => {
+                playSound(600, 0.7); 
+                document.body.style.backgroundColor = (count % 2 === 0) ? "#000" : "#d63031";
+                count++;
+                if (count >= segundos) {
+                    clearInterval(alarmanInt);
+                    document.body.style.backgroundColor = originalColor;
+                    if (callback) callback();
+                }
+            }, 1000);
+        }
+
+        function format(s) {
+            const m = Math.floor(s / 60);
+            const seg = s % 60;
+            return `${m.toString().padStart(2,'0')}:${seg.toString().padStart(2,'0')}`;
+        }
+
+        function togglePausa() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('btn-pausa');
+            btn.textContent = isPaused ? "REANUDAR" : "PAUSA";
+            btn.style.background = isPaused ? "#2ecc71" : "#0984e3";
+        }
+
+        function prepararEntrenamiento() {
+            const work = parseFloat(document.getElementById('inWork').value);
+            const rest = parseFloat(document.getElementById('inRest').value);
+            const rounds = parseInt(document.getElementById('inRounds').value);
+
+            if (work <= 0 || rest <= 0 || rounds <= 0) {
+                alert("Usa números positivos");
+                return;
+            }
+
+            roundTotal = rounds;
+            document.getElementById('panel-config').style.display = 'none';
+            document.getElementById('panel-timer').style.display = 'block';
+            
+            let prepTime = 3;
+            document.getElementById('display-time').textContent = prepTime;
+            
+            let prepInterval = setInterval(() => {
+                if (!isPaused) {
+                    prepTime--;
+                    playSound(440, 0.2);
+                    if (prepTime > 0) {
+                        document.getElementById('display-time').textContent = prepTime;
+                    } else {
+                        clearInterval(prepInterval);
+                        iniciarFase(Math.round(work * 60), true);
+                    }
+                }
+            }, 1000);
+        }
+
+        function iniciarFase(segundos, esTrabajo) {
+            timeSecs = segundos;
+            document.body.style.backgroundColor = esTrabajo ? 'var(--work-bg)' : 'var(--rest-bg)';
+            document.getElementById('label-status').textContent = esTrabajo ? "¡PELEA!" : "DESCANSO";
+            document.getElementById('label-round').textContent = `ROUND: ${roundActual} / ${roundTotal}`;
+            
+            if(interval) clearInterval(interval);
+            interval = setInterval(() => {
+                if (!isPaused) {
+                    timeSecs--;
+                    document.getElementById('display-time').textContent = format(timeSecs);
+
+                    if (timeSecs <= 0) {
+                        clearInterval(interval);
+                        
+                        if (esTrabajo || roundActual < roundTotal) {
+                            // Alarma de 5 segundos entre series
+                            ejecutarAlarmaPersistente(5, () => {
+                                if (esTrabajo) {
+                                    iniciarFase(Math.round(parseFloat(document.getElementById('inRest').value)*60), false);
+                                } else {
+                                    roundActual++;
+                                    iniciarFase(Math.round(parseFloat(document.getElementById('inWork').value)*60), true);
+                                }
+                            });
+                        } else {
+                            finalizar();
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        function finalizar() {
+            document.body.style.backgroundColor = "#000";
+            document.getElementById('label-status').textContent = "¡FIN DEL COMBATE!";
+            document.getElementById('display-time').textContent = "FIN";
+            document.getElementById('btn-pausa').style.display = "none";
+            ejecutarAlarmaPersistente(20); // 20 segundos al final
+        }
+    </script>
+</body>
+</html>
