@@ -1,0 +1,64 @@
+:root {
+    --work-bg: #d63031;
+    --rest-bg: #00b894;
+    --prep-bg: #f1c40f;
+}
+
+body {
+    background-color: #2d3436;
+    color: white;
+    font-family: 'Arial Black', Gadget, sans-serif;
+    transition: background-color 0.4s ease;
+    overflow-x: hidden;
+}
+
+/* --- LOGO --- */
+.main-logo {
+    max-height: 300px;
+    border-radius: 15px;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+/* --- TARJETA DE CONFIG --- */
+.config-card {
+    background: #ffffff;
+    color: #2d3436;
+    border-radius: 25px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.custom-input {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    text-align: center;
+    border: 3px solid #dfe6e9 !important;
+    border-radius: 10px;
+}
+
+/* --- CRONÓMETRO (El corazón del diseño) --- */
+.timer-display {
+    /* Ajuste dinámico de fuente: mínimo 5rem, máximo 25vw */
+    font-size: clamp(6rem, 28vw, 20rem);
+    font-weight: 900;
+    line-height: 1;
+    margin: 1vh 0;
+    text-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.status-text {
+    letter-spacing: 5px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+}
+
+.fw-black { font-weight: 900; }
+
+/* --- RESPONSIVIDAD EXTRA --- */
+@media (max-width: 576px) {
+    .timer-display {
+        font-size: 25vw; /* Más grande en móviles para que se vea de lejos */
+    }
+    .main-logo {
+        max-height: 120px;
+    }
+}
