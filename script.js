@@ -3,35 +3,28 @@ let timeSecs;
 let roundActual = 1;
 let roundTotal;
 let isPaused = false;
-let audioCtx;
+let workTimeFijo, restTimeFijo;
 
-// Generador de audio profesional
-function playSound(freq, duration) {
-    try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "square";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-    } catch(e) {}
+// Cargar audio
+const sonidoAlarma = new Audio('alarma.mp3');
+
+function reproducirAlarma() {
+    sonidoAlarma.pause();
+    sonidoAlarma.currentTime = 0;
+    sonidoAlarma.play().catch(e => console.log("Esperando interacción para audio..."));
 }
 
 function ejecutarAlarmaPersistente(segundos, callback) {
     let count = 0;
+    reproducirAlarma();
+    
     const alarmanInt = setInterval(() => {
         if (!isPaused) {
-            playSound(600, 0.7); 
-            document.body.classList.toggle('bg-dark'); // Efecto visual simple
+            document.body.classList.toggle('bg-dark-blink');
             count++;
             if (count >= segundos) {
                 clearInterval(alarmanInt);
+                document.body.classList.remove('bg-dark-blink');
                 if (callback) callback();
             }
         }
@@ -57,30 +50,32 @@ function togglePausa() {
 }
 
 function prepararEntrenamiento() {
-    const work = parseFloat(document.getElementById('inWork').value);
-    const rest = parseFloat(document.getElementById('inRest').value);
-    const rounds = parseInt(document.getElementById('inRounds').value);
+    const workIn = parseFloat(document.getElementById('inWork').value);
+    const restIn = parseFloat(document.getElementById('inRest').value);
+    const roundsIn = parseInt(document.getElementById('inRounds').value);
 
-    if (work <= 0 || rest <= 0 || rounds <= 0) return alert("Valores inválidos");
+    if (isNaN(workIn) || workIn <= 0) return alert("Valores inválidos");
 
-    roundTotal = rounds;
+    workTimeFijo = Math.round(workIn * 60);
+    restTimeFijo = Math.round(restIn * 60);
+    roundTotal = roundsIn;
+
     document.getElementById('panel-config').style.display = 'none';
-    document.getElementById('logo-container').style.display = 'none';
     document.getElementById('panel-timer').style.display = 'block';
     
     let prepTime = 3;
     document.getElementById('display-time').textContent = prepTime;
+    document.getElementById('label-status').textContent = "PREPÁRATE";
     document.body.style.backgroundColor = "var(--prep-bg)";
     
     let prepInterval = setInterval(() => {
         if (!isPaused) {
             prepTime--;
-            playSound(440, 0.2);
             if (prepTime > 0) {
                 document.getElementById('display-time').textContent = prepTime;
             } else {
                 clearInterval(prepInterval);
-                iniciarFase(Math.round(work * 60), true);
+                iniciarFase(workTimeFijo, true);
             }
         }
     }, 1000);
@@ -100,17 +95,19 @@ function iniciarFase(segundos, esTrabajo) {
 
             if (timeSecs <= 0) {
                 clearInterval(interval);
-                if (esTrabajo || roundActual < roundTotal) {
+                if (esTrabajo) {
                     ejecutarAlarmaPersistente(3, () => {
-                        if (esTrabajo) {
-                            iniciarFase(Math.round(parseFloat(document.getElementById('inRest').value)*60), false);
-                        } else {
-                            roundActual++;
-                            iniciarFase(Math.round(parseFloat(document.getElementById('inWork').value)*60), true);
-                        }
+                        iniciarFase(restTimeFijo, false);
                     });
                 } else {
-                    finalizar();
+                    if (roundActual < roundTotal) {
+                        ejecutarAlarmaPersistente(3, () => {
+                            roundActual++;
+                            iniciarFase(workTimeFijo, true);
+                        });
+                    } else {
+                        finalizar();
+                    }
                 }
             }
         }
@@ -118,9 +115,9 @@ function iniciarFase(segundos, esTrabajo) {
 }
 
 function finalizar() {
-    document.body.style.backgroundColor = "#000";
+    document.body.style.backgroundColor = "#717171";
     document.getElementById('label-status').textContent = "FIN";
     document.getElementById('display-time').textContent = "OSS";
     document.getElementById('btn-pausa').style.display = "none";
-    ejecutarAlarmaPersistente(5);
+    reproducirAlarma();
 }
