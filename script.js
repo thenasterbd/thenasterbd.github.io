@@ -1,3 +1,4 @@
+// Variables globales
 let interval;
 let timeSecs;
 let roundActual = 1;
@@ -5,38 +6,31 @@ let roundTotal;
 let isPaused = false;
 let workTimeFijo, restTimeFijo;
 
-// Cargar audio
-const sonidoAlarma = new Audio('alarma.mp3');
+// Carga de archivos de sonido
+const sonidoFinal = new Audio('alarma.mp3');
+const sonidoPitido = new Audio('pitido.mp3');
+const sonidoAplausos = new Audio('aplausos.mp3');
 
-function reproducirAlarma() {
-    sonidoAlarma.pause();
-    sonidoAlarma.currentTime = 0;
-    sonidoAlarma.play().catch(e => console.log("Esperando interacción para audio..."));
+/**
+ * Reproduce un sonido reiniciándolo si ya estaba sonando
+ */
+function playSound(audio) {
+    audio.currentTime = 0;
+    audio.play().catch(e => console.log("Interacción requerida para audio"));
 }
 
-function ejecutarAlarmaPersistente(segundos, callback) {
-    let count = 0;
-    reproducirAlarma();
-    
-    const alarmanInt = setInterval(() => {
-        if (!isPaused) {
-            document.body.classList.toggle('bg-dark-blink');
-            count++;
-            if (count >= segundos) {
-                clearInterval(alarmanInt);
-                document.body.classList.remove('bg-dark-blink');
-                if (callback) callback();
-            }
-        }
-    }, 1000);
-}
-
+/**
+ * Formatea segundos a formato MM:SS
+ */
 function format(s) {
     const m = Math.floor(s / 60);
     const seg = s % 60;
-    return `${m.toString().padStart(2,'0')}:${seg.toString().padStart(2,'0')}`;
+    return `${m.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Controla la pausa y reanudación
+ */
 function togglePausa() {
     isPaused = !isPaused;
     const btn = document.getElementById('btn-pausa');
@@ -49,75 +43,113 @@ function togglePausa() {
     }
 }
 
+/**
+ * Prepara los valores iniciales y lanza la cuenta regresiva de 5 segundos
+ */
 function prepararEntrenamiento() {
-    const workIn = parseFloat(document.getElementById('inWork').value);
-    const restIn = parseFloat(document.getElementById('inRest').value);
-    const roundsIn = parseInt(document.getElementById('inRounds').value);
+    const workVal = parseFloat(document.getElementById('inWork').value);
+    const restVal = parseFloat(document.getElementById('inRest').value);
+    const roundsVal = parseInt(document.getElementById('inRounds').value);
 
-    if (isNaN(workIn) || workIn <= 0) return alert("Valores inválidos");
+    // MEJORA: Validación estricta de números positivos
+    if (workVal <= 0 || restVal < 0 || roundsVal <= 0 || isNaN(workVal)) {
+        alert("¡OSS! Por favor ingresa tiempos válidos y mayores a cero.");
+        return;
+    }
 
-    workTimeFijo = Math.round(workIn * 60);
-    restTimeFijo = Math.round(restIn * 60);
-    roundTotal = roundsIn;
+    // Activa clase para achicar el logo en CSS y entra en pantalla completa
+    document.body.classList.add('timer-active');
+    if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    }
+
+    workTimeFijo = Math.round(workVal * 60);
+    restTimeFijo = Math.round(restVal * 60);
+    roundTotal = roundsVal;
+    roundActual = 1;
 
     document.getElementById('panel-config').style.display = 'none';
     document.getElementById('panel-timer').style.display = 'block';
     
-    let prepTime = 3;
-    document.getElementById('display-time').textContent = prepTime;
+    // Fase de Preparación inicial (5 segundos)
+    let prepTime = 5;
     document.getElementById('label-status').textContent = "PREPÁRATE";
-    document.body.style.backgroundColor = "var(--prep-bg)";
+    document.body.style.background = "var(--prep-bg)";
     
     let prepInterval = setInterval(() => {
         if (!isPaused) {
-            prepTime--;
-            if (prepTime > 0) {
-                document.getElementById('display-time').textContent = prepTime;
-            } else {
+            document.getElementById('display-time').textContent = format(prepTime);
+            
+            // Pitidos en los últimos 3 segundos de preparación
+            if (prepTime <= 3 && prepTime > 0) playSound(sonidoPitido);
+            
+            if (prepTime <= 0) {
                 clearInterval(prepInterval);
                 iniciarFase(workTimeFijo, true);
             }
+            prepTime--;
         }
     }, 1000);
 }
 
+/**
+ * Gestiona los ciclos de combate y descanso
+ */
 function iniciarFase(segundos, esTrabajo) {
     timeSecs = segundos;
-    document.body.style.backgroundColor = esTrabajo ? 'var(--work-bg)' : 'var(--rest-bg)';
-    document.getElementById('label-status').textContent = esTrabajo ? "¡PELEA!" : "DESCANSO";
     document.getElementById('label-round').textContent = `ROUND: ${roundActual} / ${roundTotal}`;
     
-    if(interval) clearInterval(interval);
+    // Suena la campana al iniciar cualquier fase
+    playSound(sonidoFinal);
+
+    if (interval) clearInterval(interval);
+    
     interval = setInterval(() => {
         if (!isPaused) {
-            timeSecs--;
             document.getElementById('display-time').textContent = format(timeSecs);
+            
+            if (esTrabajo) {
+                document.getElementById('label-status').textContent = "¡COMBATE!";
+                // Cambia a rojo en los últimos 10 segundos
+                document.body.style.background = (timeSecs <= 10) ? "var(--danger-bg)" : "var(--work-bg)";
+                
+                // MEJORA: Sonidos específicos
+                if (timeSecs === 10) playSound(sonidoAplausos); // Palmadas aviso 10 seg
+                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido); // Cuenta final
+            } else {
+                document.getElementById('label-status').textContent = "DESCANSO";
+                document.body.style.background = "var(--rest-bg)";
+                // Pitidos al final del descanso para avisar que vuelvan al centro
+                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido);
+            }
 
             if (timeSecs <= 0) {
                 clearInterval(interval);
+                
                 if (esTrabajo) {
-                    ejecutarAlarmaPersistente(3, () => {
-                        iniciarFase(restTimeFijo, false);
-                    });
+                    iniciarFase(restTimeFijo, false);
                 } else {
                     if (roundActual < roundTotal) {
-                        ejecutarAlarmaPersistente(3, () => {
-                            roundActual++;
-                            iniciarFase(workTimeFijo, true);
-                        });
+                        roundActual++;
+                        iniciarFase(workTimeFijo, true);
                     } else {
                         finalizar();
                     }
                 }
             }
+            timeSecs--;
         }
     }, 1000);
 }
 
+/**
+ * Pantalla final al terminar todos los rounds
+ */
 function finalizar() {
-    document.body.style.backgroundColor = "#717171";
-    document.getElementById('label-status').textContent = "FIN";
+    playSound(sonidoFinal);
+    document.body.classList.remove('timer-active'); // El logo vuelve a su tamaño original
+    document.body.style.background = "radial-gradient(circle, #4d4d4d 0%, #1a1a1a 100%)";
+    document.getElementById('label-status').textContent = "SESIÓN COMPLETADA";
     document.getElementById('display-time').textContent = "OSS";
     document.getElementById('btn-pausa').style.display = "none";
-    reproducirAlarma();
 }
