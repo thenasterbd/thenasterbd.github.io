@@ -59,9 +59,6 @@ function prepararEntrenamiento() {
 
     // Activa clase para achicar el logo en CSS y entra en pantalla completa
     document.body.classList.add('timer-active');
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-    }
 
     workTimeFijo = Math.round(workVal * 60);
     restTimeFijo = Math.round(restVal * 60);
@@ -72,7 +69,7 @@ function prepararEntrenamiento() {
     document.getElementById('panel-timer').style.display = 'block';
     
     // Fase de Preparación inicial (5 segundos)
-    let prepTime = 5;
+    let prepTime = 10;
     document.getElementById('label-status').textContent = "PREPÁRATE";
     document.body.style.background = "var(--prep-bg)";
     
