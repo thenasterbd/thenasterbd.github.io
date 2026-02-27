@@ -76,7 +76,7 @@ function prepararEntrenamiento() {
     document.getElementById('btn-reiniciar').disabled = true;
     
     // TIEMPO DE PREPARACIÓN (puedes cambiarlo a 5 si prefieres menos tiempo)
-    let prepTime = 10; 
+    let prepTime = 40; 
     document.getElementById('label-status').textContent = "PREPÁRATE";
     document.getElementById('label-round').textContent = `ROUND: 1 / ${roundTotal}`;
     
