@@ -36,21 +36,32 @@ body {
 
 /* --- TEXTOS DEL CRONÓMETRO --- */
 #hora-actual {
-    font-size: 10rem;
+    font-size: 20rem;
     font-family: 'Courier New', monospace;
     font-weight: 900;
     line-height: 1;
     text-shadow: 8px 8px 0px rgba(0,0,0,0.8);
+    display: flex; /* Alinea los elementos en línea */
+    align-items: baseline; /* Los mantiene pegados al suelo de la letra */
+    letter-spacing: -10px; /* Compacta los números */
+}
+
+/* Estilo para el AM/PM */
+.sufijo {
+    font-size: 5rem; /* Mucho más pequeño para que no robe espacio */
+    margin-left: 10px; /* Un pequeño respiro respecto a los segundos */
+    letter-spacing: normal; /* Que las letras AM no se encimen tanto */
+    vertical-align: middle;
 }
 
 .status-text {
-    font-size: 3rem;
+    font-size: 5rem;
     text-transform: uppercase;
     font-weight: 900;
 }
 
 .timer-display {
-    font-size: 18rem; 
+    font-size: 40rem; 
     font-weight: 900;
     line-height: 0.8;
     text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
@@ -58,7 +69,7 @@ body {
 }
 
 .round-text { 
-    font-size: 3.5rem; 
+    font-size: 5rem; 
     font-weight: 900;
     text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
 }

@@ -15,10 +15,23 @@ function actualizarReloj() {
     const opciones = { 
         timeZone: 'America/Caracas', 
         hour: '2-digit', minute: '2-digit', second: '2-digit', 
-        hour12: false 
+        hour12: true 
     };
+    
     const elHora = document.getElementById('hora-actual');
-    if(elHora) elHora.textContent = ahora.toLocaleTimeString('es-VE', opciones);
+    if(elHora) {
+        let cadena = ahora.toLocaleTimeString('es-VE', opciones)
+                          .replace(/\./g, '')
+                          .toUpperCase();
+        
+        // Separamos la hora ("12:45:30") del sufijo ("AM")
+        let partes = cadena.split(' '); 
+        let numeros = partes[0];
+        let sufijo = partes[1];
+
+        // Insertamos el HTML con el sufijo en un span para controlarlo
+        elHora.innerHTML = `${numeros}<span class="sufijo">${sufijo}</span>`;
+    }
 }
 setInterval(actualizarReloj, 1000);
 actualizarReloj();
