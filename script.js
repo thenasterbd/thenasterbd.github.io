@@ -91,7 +91,7 @@ function prepararEntrenamiento() {
     // TIEMPO DE PREPARACIÓN (puedes cambiarlo a 5 si prefieres menos tiempo)
     let prepTime = 40; 
     document.getElementById('label-status').textContent = "PREPÁRATE";
-    document.getElementById('label-round').textContent = `ROUND: 1 / ${roundTotal}`;
+    document.getElementById('label-round').textContent = `COMBATE: 1 / ${roundTotal}`;
     
     let prepInterval = setInterval(() => {
         if (!isPaused) {
@@ -157,7 +157,7 @@ function pasarSiguienteRound() {
 function finalizar() {
     playSound(sonidoFinal);
     document.body.style.background = "var(--default-bg)";
-    document.getElementById('label-status').textContent = "PELAS COMPLETADAS";
+    document.getElementById('label-status').textContent = "COMBATES COMPLETADOS";
     document.getElementById('display-time').textContent = "OSS";
     document.getElementById('btn-pausa').style.display = "none";
     document.getElementById('btn-reiniciar').style.display = "none";
