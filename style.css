@@ -1,76 +1,138 @@
 :root {
     --work-bg: radial-gradient(circle, #131313 0%, #131313 100%);
     --rest-bg: radial-gradient(circle, #00d2ad 0%, #006b56 100%);
-    --prep-bg: radial-gradient(circle, #131313 0%, #131313 100%);
     --danger-bg: radial-gradient(circle, #ff4757 0%, #800000 100%);
-    --default-bg: radial-gradient(circle, #4d4d4d 0%, #1a1a1a 100%);
+    --default-bg: radial-gradient(circle, #222 0%, #000 100%);
 }
 
 body {
     background: var(--default-bg);
     color: white;
     font-family: 'Arial Black', Gadget, sans-serif;
-    transition: background 0.8s ease;
+    transition: background 0.6s ease;
     overflow: hidden;
     min-height: 100vh;
     margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-/* LOGO DINÁMICO */
-#logo-container {
-    transition: all 0.6s ease;
-    margin-bottom: 20px;
-}
-
-.main-logo {
-    width: 450px; /* Tamaño grande para TV */
-    max-height: 300px;
+/* --- LOGOS --- */
+.logo-gigante {
+    width: 450px;
+    max-height: 30vh;
     object-fit: contain;
-    filter: drop-shadow(0 0 25px rgba(255,255,255,0.2));
 }
 
-/* Cuando el timer está activo, el logo se achica un poco */
-.timer-active .main-logo {
-    width: 700px;
-    max-height: 400px;
+.logo-pequeno {
+    width: 300px; 
+    max-height: 250px; 
+    object-fit: contain;
+    margin-bottom: 5px;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
 }
 
-.config-card {
-    background: rgba(255, 255, 255, 0.95);
-    color: #000;
-    border-radius: 30px;
-    border-top: 15px solid #00d2ad;
-    max-width: 600px;
-    width: 90%;
-    padding: 3rem !important;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-}
-
-.custom-input {
-    font-size: 2.5rem !important;
-    font-weight: 900 !important;
-    text-align: center;
-}
-
-/* RELOJ GIGANTE */
-.timer-display {
-    font-size: clamp(10rem, 38vw, 28rem); 
+/* --- TEXTOS DEL CRONÓMETRO --- */
+#hora-actual {
+    font-size: 10rem;
+    font-family: 'Courier New', monospace;
     font-weight: 900;
-    line-height: 0.8;
-    text-shadow: 10px 10px 0px rgba(0,0,0,0.5);
-    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-shadow: 8px 8px 0px rgba(0,0,0,0.8);
 }
 
 .status-text {
-    font-size: clamp(2.5rem, 6vw, 5.5rem);
+    font-size: 3rem;
     text-transform: uppercase;
     font-weight: 900;
 }
 
-.round-text {
-    font-size: clamp(1.8rem, 4vw, 4rem);
+.timer-display {
+    font-size: 18rem; 
+    font-weight: 900;
+    line-height: 0.8;
+    text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
+    margin: 10px 0;
+}
+
+.round-text { 
+    font-size: 3.5rem; 
+    font-weight: 900;
+    text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
+}
+
+/* --- SISTEMA DE BOTONES (ESTILO COMPACTO Y CENTRADO) --- */
+.botones-container {
+    display: flex;
+    justify-content: center; /* Centra el bloque en la pantalla */
+    align-items: center;
+    width: 100%;
+    margin-top: 35px;
+}
+
+/* Contenedor interno para agrupar los 3 botones en una fila */
+.botones-container-inner {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espacio horizontal entre botones */
+    width: auto;
+}
+
+.custom-btn {
+    width: 180px;  /* Ancho reducido para que no se peguen */
+    height: 65px;  /* Altura controlada */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem !important;
+    font-weight: 900 !important;
+    border-radius: 12px !important;
+    border-width: 3px !important;
+    text-transform: uppercase;
+    transition: transform 0.1s ease;
+    padding: 0 !important;
+}
+
+.custom-btn:active {
+    transform: scale(0.95);
+}
+
+/* Colores de los botones */
+.btn-primary { 
+    background-color: #0d6efd !important; 
+    border-color: #0d6efd !important; 
+}
+
+.btn-warning { 
+    background-color: #ffc107 !important; 
+    border-color: #ffc107 !important; 
+    color: black !important;
+}
+
+.btn-outline-light { 
+    border: 3px solid white !important; 
+    background-color: transparent !important;
+    color: white !important;
+}
+
+button:disabled {
+    opacity: 0.2 !important;
+    filter: grayscale(1);
+}
+
+/* --- PANEL CONFIGURACIÓN --- */
+.config-card {
+    background: white;
+    color: #000;
+    border-radius: 30px;
+    width: 500px;
+    border-top: 15px solid #00d2ad;
+}
+
+.custom-input { 
+    font-size: 2.5rem !important; 
+    font-weight: 900; 
+    text-align: center; 
 }
