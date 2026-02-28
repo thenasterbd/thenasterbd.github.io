@@ -61,7 +61,7 @@ body {
 }
 
 .timer-display {
-    font-size: 25rem; 
+    font-size: 20rem; 
     font-weight: 900;
     line-height: 0.8;
     text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
@@ -92,12 +92,12 @@ body {
 }
 
 .custom-btn {
-    width: 400px;  /* Ancho reducido para que no se peguen */
-    height: 80px;  /* Altura controlada */
+    width: 300px;  /* Ancho reducido para que no se peguen */
+    height: 60px;  /* Altura controlada */
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2rem !important;
+    font-size: 1.5rem !important;
     font-weight: 900 !important;
     border-radius: 12px !important;
     border-width: 3px !important;
