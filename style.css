@@ -36,7 +36,7 @@ body {
 
 /* --- TEXTOS DEL CRONÓMETRO --- */
 #hora-actual {
-    font-size: 20rem;
+    font-size: 12rem;
     font-family: 'Courier New', monospace;
     font-weight: 900;
     line-height: 1;
@@ -87,7 +87,7 @@ body {
 .botones-container-inner {
     display: flex;
     justify-content: center;
-    gap: 30px; /* Espacio horizontal entre botones */
+    gap: 25px; /* Espacio horizontal entre botones */
     width: auto;
 }
 
