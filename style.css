@@ -27,8 +27,8 @@ body {
 }
 
 .logo-pequeno {
-    width: 300px; 
-    max-height: 250px; 
+    width: 200px; 
+    max-height: 200px; 
     object-fit: contain;
     margin-bottom: 5px;
     filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
@@ -48,28 +48,28 @@ body {
 
 /* Estilo para el AM/PM */
 .sufijo {
-    font-size: 5rem; /* Mucho más pequeño para que no robe espacio */
+    font-size: 4rem; /* Mucho más pequeño para que no robe espacio */
     margin-left: 10px; /* Un pequeño respiro respecto a los segundos */
     letter-spacing: normal; /* Que las letras AM no se encimen tanto */
     vertical-align: middle;
 }
 
 .status-text {
-    font-size: 5rem;
+    font-size: 3rem;
     text-transform: uppercase;
     font-weight: 900;
 }
 
 .timer-display {
-    font-size: 20rem; 
-    font-weight: 900;
+    font-size: 10rem; 
+    font-weight: 800;
     line-height: 0.8;
     text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
     margin: 10px 0;
 }
 
 .round-text { 
-    font-size: 5rem; 
+    font-size: 3rem; 
     font-weight: 900;
     text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
 }
@@ -89,6 +89,7 @@ body {
     justify-content: center;
     gap: 25px; /* Espacio horizontal entre botones */
     width: auto;
+    padding-bottom: 100px;
 }
 
 .custom-btn {
