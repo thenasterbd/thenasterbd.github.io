@@ -4,162 +4,120 @@
     --danger-bg:  radial-gradient(circle, #ff4757 0%, #800000 100%);
     --default-bg: radial-gradient(circle, #222 0%, #000 100%);
     --accent:     #00d2ad;
-    --accent2:    #ffc107;
+    --card-bg:    #111;
+    --border:     rgba(255,255,255,0.08);
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     background: var(--default-bg);
     color: white;
     font-family: 'Arial Black', Gadget, sans-serif;
     transition: background 0.6s ease;
-    overflow: hidden;
     min-height: 100vh;
-    margin: 0;
+    overflow: hidden;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-/* ===================== LOGOS ===================== */
+/* ===================== PANTALLA INICIO ===================== */
+#pantalla-inicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
 .logo-gigante {
-    width: 450px;
-    max-height: 30vh;
+    width: 420px;
+    max-height: 28vh;
     object-fit: contain;
 }
 
-.logo-pequeno {
-    width: 200px;
-    max-height: 200px;
-    object-fit: contain;
-    margin-bottom: 5px;
-    filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
-}
-
-/* ===================== RELOJ INICIO ===================== */
 #hora-actual {
-    font-size: 14rem;
+    font-size: 12rem;
     font-family: 'Courier New', monospace;
     font-weight: 900;
     line-height: 1;
-    text-shadow: 8px 8px 0px rgba(0,0,0,0.8);
+    text-shadow: 8px 8px 0 rgba(0,0,0,0.8);
     display: flex;
     align-items: baseline;
     letter-spacing: -10px;
 }
 
 .sufijo {
-    font-size: 4rem;
-    margin-left: 10px;
+    font-size: 3.5rem;
+    margin-left: 12px;
     letter-spacing: normal;
-    vertical-align: middle;
 }
 
-/* ===================== RELOJ PEQUEÑO EN TIMER ===================== */
-#reloj-timer {
-    position: fixed;
-    top: 20px;
-    right: 40px;
-    font-family: 'Courier New', monospace;
-    font-size: 4rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.75);
-    letter-spacing: 3px;
-    user-select: none;
-}
-
-/* ===================== TIMER ===================== */
-.status-text {
-    font-size: 3rem;
-    text-transform: uppercase;
+.btn-inicio {
+    margin-top: 20px;
+    padding: 20px 60px;
+    background: transparent;
+    border: 3px solid white;
+    border-radius: 16px;
+    color: white;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 2rem;
     font-weight: 900;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
 }
 
-.timer-display {
-    font-size: 10rem;
-    font-weight: 800;
-    line-height: 0.8;
-    text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
-    margin: 10px 0;
-}
-
-.round-text {
-    font-size: 3rem;
-    font-weight: 900;
-    text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
-}
-
-/* ===================== BOTONES TIMER ===================== */
-.botones-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin-top: 35px;
-}
-
-.botones-container-inner {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    width: auto;
-    padding-bottom: 20px;
-}
-
-.custom-btn {
-    width: 300px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem !important;
-    font-weight: 900 !important;
-    border-radius: 12px !important;
-    border-width: 3px !important;
-    text-transform: uppercase;
-    transition: transform 0.1s ease;
-    padding: 0 !important;
-}
-
-.custom-btn:active { transform: scale(0.95); }
-
-.btn-primary       { background-color: #0d6efd !important; border-color: #0d6efd !important; }
-.btn-warning       { background-color: #ffc107 !important; border-color: #ffc107 !important; color: black !important; }
-.btn-outline-light { border: 3px solid white !important; background-color: transparent !important; color: white !important; }
-
-button:disabled {
-    opacity: 0.2 !important;
-    filter: grayscale(1);
+.btn-inicio:hover {
+    background: white;
+    color: black;
 }
 
 /* ===================== PANEL CONFIGURACIÓN ===================== */
-.config-card {
-    background: #111;
-    color: white;
-    border-radius: 24px;
-    width: 620px;
-    border-top: 6px solid var(--accent);
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 0 60px rgba(0, 210, 173, 0.15);
+#panel-config {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    gap: 0;
+}
+
+.config-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 48px;
+    overflow-y: auto;
+}
+
+.izquierda {
+    background: #0e0e0e;
+    border-right: 1px solid var(--border);
+}
+
+.derecha {
+    background: #0a0a0a;
 }
 
 .config-titulo {
-    font-size: 2rem;
-    letter-spacing: 4px;
+    font-size: 1.8rem;
+    letter-spacing: 5px;
     color: white;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 16px;
+    margin-bottom: 24px;
 }
 
-.config-label-seccion {
-    font-size: 0.85rem;
+.config-seccion-label {
+    font-size: 0.75rem;
     letter-spacing: 3px;
-    color: rgba(255,255,255,0.4);
-    margin-bottom: 10px;
+    color: rgba(255,255,255,0.35);
     font-weight: 700;
+    margin-bottom: 12px;
 }
 
-/* --- MODOS GRID --- */
+/* --- MODOS --- */
 .modos-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -171,80 +129,56 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 14px 8px;
-    background: rgba(255,255,255,0.05);
+    gap: 5px;
+    padding: 16px 8px;
+    background: rgba(255,255,255,0.04);
     border: 2px solid rgba(255,255,255,0.1);
     border-radius: 14px;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.55);
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: 'Arial Black', sans-serif;
 }
 
 .modo-btn:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.25);
     color: white;
 }
 
 .modo-btn.activo {
-    background: rgba(0, 210, 173, 0.15);
+    background: rgba(0,210,173,0.12);
     border-color: var(--accent);
     color: white;
-    box-shadow: 0 0 16px rgba(0, 210, 173, 0.3);
+    box-shadow: 0 0 20px rgba(0,210,173,0.25);
 }
 
 .modo-icono  { font-size: 1.6rem; }
-.modo-nombre { font-size: 0.95rem; font-weight: 900; letter-spacing: 1px; }
-.modo-detalle { font-size: 0.7rem; color: rgba(255,255,255,0.45); text-align: center; letter-spacing: 0.5px; }
-
-/* --- SEPARADOR --- */
-.config-separador {
-    text-align: center;
-    font-size: 0.75rem;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.25);
-    font-weight: 700;
-    margin: 20px 0 14px;
-    position: relative;
-}
-
-.config-separador::before,
-.config-separador::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 28%;
-    height: 1px;
-    background: rgba(255,255,255,0.1);
-}
-.config-separador::before { left: 0; }
-.config-separador::after  { right: 0; }
+.modo-nombre { font-size: 0.9rem; font-weight: 900; letter-spacing: 1px; }
+.modo-detalle { font-size: 0.65rem; color: rgba(255,255,255,0.4); text-align: center; }
 
 /* --- INPUTS --- */
 .config-inputs {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .config-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 10px 16px;
-    border: 1px solid rgba(255,255,255,0.07);
+    padding: 12px 18px;
 }
 
 .config-label {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 900;
     letter-spacing: 2px;
-    color: rgba(255,255,255,0.75);
-    margin: 0;
+    color: rgba(255,255,255,0.7);
 }
 
 .config-input-wrap {
@@ -254,12 +188,12 @@ button:disabled {
 }
 
 .config-input {
-    width: 100px;
-    background: rgba(255,255,255,0.08);
-    border: 2px solid rgba(255,255,255,0.15);
+    width: 90px;
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.12);
     border-radius: 10px;
     color: white;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     font-weight: 900;
     font-family: 'Arial Black', sans-serif;
     text-align: center;
@@ -268,18 +202,13 @@ button:disabled {
     transition: border-color 0.2s;
 }
 
-.config-input:focus {
-    border-color: var(--accent);
-    background: rgba(0, 210, 173, 0.08);
-}
-
-/* Quitar flechas del número en Chrome/Safari */
+.config-input:focus { border-color: var(--accent); }
 .config-input::-webkit-inner-spin-button,
 .config-input::-webkit-outer-spin-button { opacity: 0.3; }
 
 .config-unidad {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.35);
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
     font-weight: 700;
     letter-spacing: 1px;
     width: 24px;
@@ -287,8 +216,9 @@ button:disabled {
 
 /* --- BOTONES CONFIG --- */
 .btn-iniciar {
+    margin-top: 28px;
     width: 100%;
-    padding: 16px;
+    padding: 18px;
     background: var(--accent);
     border: none;
     border-radius: 14px;
@@ -296,27 +226,410 @@ button:disabled {
     font-family: 'Arial Black', sans-serif;
     font-size: 1.6rem;
     font-weight: 900;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     cursor: pointer;
     transition: opacity 0.2s, transform 0.1s;
-    box-shadow: 0 0 30px rgba(0, 210, 173, 0.4);
+    box-shadow: 0 0 30px rgba(0,210,173,0.35);
 }
 
-.btn-iniciar:hover  { opacity: 0.9; }
+.btn-iniciar:hover  { opacity: 0.88; }
 .btn-iniciar:active { transform: scale(0.98); }
 
 .btn-volver {
-    display: block;
-    width: 100%;
     margin-top: 10px;
     background: transparent;
     border: none;
-    color: rgba(255,255,255,0.3);
-    font-size: 0.9rem;
+    color: rgba(255,255,255,0.25);
+    font-size: 0.85rem;
     letter-spacing: 2px;
     cursor: pointer;
     padding: 8px;
     transition: color 0.2s;
+    text-align: center;
 }
 
-.btn-volver:hover { color: rgba(255,255,255,0.7); }
+.btn-volver:hover { color: rgba(255,255,255,0.6); }
+
+/* ===================== COLUMNA MÚSICA ===================== */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.search-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 1rem;
+    font-family: 'Arial Black', sans-serif;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: rgba(255,255,255,0.25); font-weight: normal; font-family: Arial, sans-serif; }
+
+.search-btn {
+    padding: 12px 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: black;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.search-btn:hover { opacity: 0.85; }
+
+#search-estado {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    min-height: 18px;
+}
+
+/* --- RESULTADOS --- */
+#search-resultados {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+#search-resultados::-webkit-scrollbar { width: 4px; }
+#search-resultados::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+.resultado-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.resultado-card:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
+}
+
+.resultado-card.seleccionado {
+    background: rgba(0,210,173,0.1);
+    border-color: var(--accent);
+}
+
+.resultado-thumb {
+    width: 72px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.resultado-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.resultado-tipo {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.35);
+}
+
+.resultado-titulo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: Arial, sans-serif;
+    line-height: 1.3;
+}
+
+.resultado-canal {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.35);
+    font-family: Arial, sans-serif;
+}
+
+.resultado-sel-mark {
+    font-size: 1.2rem;
+    color: var(--accent);
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+}
+
+.resultado-card.seleccionado .resultado-sel-mark { opacity: 1; }
+
+/* --- MÚSICA SELECCIONADA --- */
+#musica-seleccionada {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0,210,173,0.08);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-top: 16px;
+}
+
+#musica-sel-thumb {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.musica-sel-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.musica-sel-label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+}
+
+#musica-sel-titulo {
+    font-size: 0.85rem;
+    color: white;
+    font-family: Arial, sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.musica-sel-check { font-size: 1.3rem; }
+
+#sin-musica-msg {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.2);
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* ===================== PANEL TIMER ===================== */
+#panel-timer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* Reloj esquina */
+#reloj-timer {
+    position: fixed;
+    top: 22px;
+    right: 40px;
+    font-family: 'Courier New', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 2px;
+    user-select: none;
+}
+
+.logo-pequeno {
+    width: 180px;
+    max-height: 130px;
+    object-fit: contain;
+    margin-bottom: 4px;
+    filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+}
+
+.status-text {
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+.timer-display {
+    font-size: 10rem;
+    font-weight: 900;
+    line-height: 0.85;
+    text-shadow: 10px 10px 0 rgba(0,0,0,0.6);
+    margin: 8px 0;
+}
+
+.round-text {
+    font-size: 2.8rem;
+    font-weight: 900;
+    text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+}
+
+/* --- BOTONES TIMER --- */
+.botones-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+}
+
+.tbtn {
+    width: 280px;
+    height: 64px;
+    border: none;
+    border-radius: 14px;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.tbtn:active   { transform: scale(0.96); }
+.tbtn:disabled { opacity: 0.2; filter: grayscale(1); }
+
+.tbtn-primary { background: #0d6efd; color: white; }
+.tbtn-success { background: #28a745; color: white; }
+.tbtn-warning { background: #ffc107; color: black; }
+.tbtn-outline { background: transparent; color: white; border: 3px solid white; }
+
+/* ===================== BARRA DE MÚSICA ===================== */
+#music-bar {
+    display: none;
+    align-items: center;
+    gap: 16px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 12px 32px;
+}
+
+#music-bar-thumb {
+    width: 60px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.music-bar-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+.music-bar-label {
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+}
+
+.music-bar-titulo {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.85);
+    font-family: Arial, sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.music-ctrl-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.music-ctrl-btn:hover { background: rgba(255,255,255,0.2); }
+
+.btn-activar {
+    width: auto;
+    border-radius: 10px;
+    padding: 0 16px;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    background: var(--accent);
+    border-color: var(--accent);
+    color: black;
+}
+
+.btn-activar:hover { background: #00b89a; }
+
+.music-bar-estado {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.4);
+    font-family: Arial, sans-serif;
+    letter-spacing: 1px;
+}
+
+.volume-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vol-icon { font-size: 1rem; }
+
+.volume-slider {
+    width: 120px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+#yt-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}

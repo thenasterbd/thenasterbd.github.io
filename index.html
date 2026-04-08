@@ -4,58 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arte Suave SC - BJJ Timer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="pantalla-inicio" class="text-center">
-        <div id="logo-container-inicio" class="mb-4">
-            <img src="logo.png" alt="Logo Academia" class="logo-gigante">
-        </div>
-        <div id="reloj-contenedor">
-            <div id="hora-actual">00:00:00</div>
-        </div>
-        <button class="btn btn-outline-light btn-lg mt-5 px-5 py-3 fw-bold fs-2 shadow" onclick="mostrarConfiguracion()">
-            CONFIGURAR PELEAS
-        </button>
+    <!-- ===================== PANTALLA INICIO ===================== -->
+    <div id="pantalla-inicio">
+        <img src="logo.png" alt="Logo Academia" class="logo-gigante">
+        <div id="hora-actual">00:00:00</div>
+        <button class="btn-inicio" onclick="mostrarConfiguracion()">CONFIGURAR PELEAS</button>
     </div>
 
-    <div class="container-fluid d-flex flex-column align-items-center justify-content-center">
+    <!-- ===================== PANEL CONFIGURACIÓN ===================== -->
+    <div id="panel-config">
 
-        <div class="card shadow-lg config-card p-4" id="panel-config" style="display: none;">
-            <h2 class="text-center fw-bold mb-4 config-titulo">AJUSTES</h2>
+        <div class="config-col izquierda">
+            <h2 class="config-titulo">AJUSTES</h2>
 
-            <!-- SELECTOR DE MODO -->
-            <div class="mb-4">
-                <p class="config-label-seccion">MODO</p>
-                <div class="modos-grid">
-                    <button class="modo-btn" id="modo-clase1" onclick="aplicarModo('clase1')">
-                        <span class="modo-icono">🥋</span>
-                        <span class="modo-nombre">CLASE</span>
-                        <span class="modo-detalle">6 min · 1 desc · 6 peleas</span>
-                    </button>
-                    <button class="modo-btn" id="modo-clase2" onclick="aplicarModo('clase2')">
-                        <span class="modo-icono">🥋</span>
-                        <span class="modo-nombre">CLASE +</span>
-                        <span class="modo-detalle">8 min · 2 desc · 8 peleas</span>
-                    </button>
-                    <button class="modo-btn" id="modo-comp" onclick="aplicarModo('comp')">
-                        <span class="modo-icono">🏆</span>
-                        <span class="modo-nombre">COMPETENCIA</span>
-                        <span class="modo-detalle">10 min · sin desc · 1 pelea</span>
-                    </button>
-                </div>
+            <!-- MODOS -->
+            <p class="config-seccion-label">MODO</p>
+            <div class="modos-grid">
+                <button class="modo-btn" id="modo-clase1" onclick="aplicarModo('clase1')">
+                    <span class="modo-icono">🥋</span>
+                    <span class="modo-nombre">CLASE</span>
+                    <span class="modo-detalle">6 min · 1 desc · 6 peleas</span>
+                </button>
+                <button class="modo-btn" id="modo-clase2" onclick="aplicarModo('clase2')">
+                    <span class="modo-icono">🥋</span>
+                    <span class="modo-nombre">CLASE +</span>
+                    <span class="modo-detalle">8 min · 2 desc · 8 peleas</span>
+                </button>
+                <button class="modo-btn" id="modo-comp" onclick="aplicarModo('comp')">
+                    <span class="modo-icono">🏆</span>
+                    <span class="modo-nombre">COMPETENCIA</span>
+                    <span class="modo-detalle">10 min · sin desc · 1 pelea</span>
+                </button>
             </div>
 
-            <div class="config-separador">PERSONALIZAR</div>
-
             <!-- INPUTS -->
+            <p class="config-seccion-label" style="margin-top:28px">PERSONALIZAR</p>
             <div class="config-inputs">
                 <div class="config-row">
                     <label class="config-label">TIEMPO</label>
                     <div class="config-input-wrap">
-                        <input type="number" id="inWork" class="config-input" value="6" min="1" max="60" step="1">
+                        <input type="number" id="inWork" class="config-input" value="6" min="1" max="60">
                         <span class="config-unidad">min</span>
                     </div>
                 </div>
@@ -75,45 +67,98 @@
                 </div>
             </div>
 
-            <button class="btn-iniciar mt-4" onclick="prepararEntrenamiento()">
-                INICIAR
-            </button>
+            <button class="btn-iniciar" onclick="prepararEntrenamiento()">INICIAR</button>
             <button class="btn-volver" onclick="location.reload()">VOLVER</button>
         </div>
 
-        <div id="panel-timer" class="text-center w-100" style="display: none;">
+        <!-- COLUMNA MÚSICA -->
+        <div class="config-col derecha">
+            <p class="config-titulo" style="margin-bottom:16px">MÚSICA</p>
+            <p class="config-seccion-label">BUSCAR EN YOUTUBE</p>
 
-            <!-- RELOJ PEQUEÑO ARRIBA A LA DERECHA -->
-            <div id="reloj-timer">
-                <span id="hora-timer">00:00</span>
+            <div class="search-bar">
+                <input
+                    type="text"
+                    id="music-search"
+                    class="search-input"
+                    placeholder="Ej: trap workout, reggaeton gym..."
+                    onkeydown="if(event.key==='Enter') buscarMusica()"
+                >
+                <button class="search-btn" onclick="buscarMusica()">BUSCAR</button>
             </div>
 
-            <div id="logo-timer-container">
-                <img src="logo.png" alt="Logo Academia" class="logo-pequeno">
+            <!-- Estado de búsqueda -->
+            <div id="search-estado"></div>
+
+            <!-- Resultados -->
+            <div id="search-resultados"></div>
+
+            <!-- Música seleccionada -->
+            <div id="musica-seleccionada">
+                <img id="musica-sel-thumb" src="" alt="">
+                <div class="musica-sel-info">
+                    <span class="musica-sel-label">SELECCIONADO</span>
+                    <span id="musica-sel-titulo"></span>
+                </div>
+                <span class="musica-sel-check">✅</span>
             </div>
 
-            <h2 class="status-text mb-0" id="label-status">LISTO</h2>
-            <div class="timer-display" id="display-time">00:00</div>
-
-            <div class="mb-2">
-                <span class="round-text" id="label-round">PELEA: 1 / 6</span>
+            <!-- Sin música -->
+            <div id="sin-musica-msg">
+                Sin música seleccionada — el timer funciona igual sin ella.
             </div>
+        </div>
 
-            <div class="botones-container">
-                <div class="botones-container-inner">
-                    <button class="btn btn-primary custom-btn shadow" id="btn-pausa" onclick="togglePausa()">
-                        PAUSA
-                    </button>
-                    <button class="btn btn-warning custom-btn shadow text-dark" id="btn-reiniciar" onclick="reiniciarRound()">
-                        REINICIAR
-                    </button>
-                    <button class="btn btn-outline-light custom-btn shadow" onclick="location.reload()">
-                        SALIR
-                    </button>
+    </div>
+
+    <!-- ===================== PANEL TIMER ===================== -->
+    <div id="panel-timer">
+
+        <!-- Reloj esquina -->
+        <div id="reloj-timer"><span id="hora-timer">00:00</span></div>
+
+        <!-- Logo -->
+        <img src="logo.png" alt="Logo" class="logo-pequeno">
+
+        <!-- Timer principal -->
+        <h2 class="status-text" id="label-status">LISTO</h2>
+        <div class="timer-display" id="display-time">00:00</div>
+        <span class="round-text" id="label-round">PELEA: 1 / 6</span>
+
+        <!-- Botones -->
+        <div class="botones-row">
+            <button class="tbtn tbtn-primary" id="btn-pausa" onclick="togglePausa()">PAUSA</button>
+            <button class="tbtn tbtn-warning" id="btn-reiniciar" onclick="reiniciarRound()">REINICIAR</button>
+            <button class="tbtn tbtn-outline" onclick="location.reload()">SALIR</button>
+        </div>
+
+        <!-- Barra de música -->
+        <div id="music-bar">
+            <img id="music-bar-thumb" src="" alt="">
+            <div class="music-bar-info">
+                <span class="music-bar-label">MÚSICA</span>
+                <span id="music-bar-titulo" class="music-bar-titulo">—</span>
+                <span id="music-bar-estado" class="music-bar-estado"></span>
+            </div>
+            <div class="music-bar-controls">
+                <!-- Botón para activar (requiere clic del usuario para que el navegador permita el audio) -->
+                <button class="music-ctrl-btn btn-activar" id="btn-activar-musica" onclick="activarMusica()">▶ ACTIVAR</button>
+                <!-- Controles normales (aparecen después de activar) -->
+                <button class="music-ctrl-btn" id="btn-ant-cancion" onclick="anteriorCancion()" style="display:none" title="Anterior">⏮</button>
+                <button class="music-ctrl-btn" id="btn-music-toggle" onclick="toggleMusica()" style="display:none">⏸</button>
+                <button class="music-ctrl-btn" id="btn-sig-cancion" onclick="siguienteCancion()" style="display:none" title="Siguiente">⏭</button>
+                <div class="volume-wrap">
+                    <span class="vol-icon">🔊</span>
+                    <input type="range" id="music-volume-timer" min="0" max="100" value="70"
+                        oninput="cambiarVolumen(this.value)" class="volume-slider">
                 </div>
             </div>
         </div>
+
     </div>
+
+    <!-- Player de YouTube -->
+    <div id="yt-player"></div>
 
     <script src="script.js"></script>
 </body>
