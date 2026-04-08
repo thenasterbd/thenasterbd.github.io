@@ -22,56 +22,96 @@
     </div>
 
     <div class="container-fluid d-flex flex-column align-items-center justify-content-center">
+
         <div class="card shadow-lg config-card p-4" id="panel-config" style="display: none;">
-            <h2 class="text-center fw-bold mb-4">AJUSTES</h2>
-            
-            <div class="mb-3 d-flex align-items-center justify-content-between">
-                <label class="h4 mb-0 fw-bold">TIEMPO:</label>
-                <input type="number" id="inWork" class="form-control w-50 custom-input" value="5" min="1" max="15" step="1">
-            </div>
-            
-            <div class="mb-3 d-flex align-items-center justify-content-between">
-                <label class="h4 mb-0 fw-bold">DESCANSO:</label>
-                <input type="number" id="inRest" class="form-control w-50 custom-input" value="2" min="0" step="0.1" >
-            </div>
-            
-            <div class="mb-4 d-flex align-items-center justify-content-between">
-                <label class="h4 mb-0 fw-bold">PELEA:</label>
-                <input type="number" id="inRounds" class="form-control w-50 custom-input" value="6" min="1">
+            <h2 class="text-center fw-bold mb-4 config-titulo">AJUSTES</h2>
+
+            <!-- SELECTOR DE MODO -->
+            <div class="mb-4">
+                <p class="config-label-seccion">MODO</p>
+                <div class="modos-grid">
+                    <button class="modo-btn" id="modo-clase1" onclick="aplicarModo('clase1')">
+                        <span class="modo-icono">🥋</span>
+                        <span class="modo-nombre">CLASE</span>
+                        <span class="modo-detalle">6 min · 1 desc · 6 peleas</span>
+                    </button>
+                    <button class="modo-btn" id="modo-clase2" onclick="aplicarModo('clase2')">
+                        <span class="modo-icono">🥋</span>
+                        <span class="modo-nombre">CLASE +</span>
+                        <span class="modo-detalle">8 min · 2 desc · 8 peleas</span>
+                    </button>
+                    <button class="modo-btn" id="modo-comp" onclick="aplicarModo('comp')">
+                        <span class="modo-icono">🏆</span>
+                        <span class="modo-nombre">COMPETENCIA</span>
+                        <span class="modo-detalle">10 min · sin desc · 1 pelea</span>
+                    </button>
+                </div>
             </div>
 
-            <button class="btn btn-dark btn-lg w-100 py-3 fw-bold fs-2 shadow mb-2" onclick="prepararEntrenamiento()">
+            <div class="config-separador">PERSONALIZAR</div>
+
+            <!-- INPUTS -->
+            <div class="config-inputs">
+                <div class="config-row">
+                    <label class="config-label">TIEMPO</label>
+                    <div class="config-input-wrap">
+                        <input type="number" id="inWork" class="config-input" value="6" min="1" max="60" step="1">
+                        <span class="config-unidad">min</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <label class="config-label">DESCANSO</label>
+                    <div class="config-input-wrap">
+                        <input type="number" id="inRest" class="config-input" value="1" min="0" step="0.5">
+                        <span class="config-unidad">min</span>
+                    </div>
+                </div>
+                <div class="config-row">
+                    <label class="config-label">PELEAS</label>
+                    <div class="config-input-wrap">
+                        <input type="number" id="inRounds" class="config-input" value="6" min="1">
+                        <span class="config-unidad">rds</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-iniciar mt-4" onclick="prepararEntrenamiento()">
                 INICIAR
             </button>
-            <button class="btn btn-link text-dark w-100" onclick="location.reload()">VOLVER</button>
+            <button class="btn-volver" onclick="location.reload()">VOLVER</button>
         </div>
 
         <div id="panel-timer" class="text-center w-100" style="display: none;">
+
+            <!-- RELOJ PEQUEÑO ARRIBA A LA DERECHA -->
+            <div id="reloj-timer">
+                <span id="hora-timer">00:00</span>
+            </div>
+
             <div id="logo-timer-container">
                 <img src="logo.png" alt="Logo Academia" class="logo-pequeno">
             </div>
-            
+
             <h2 class="status-text mb-0" id="label-status">LISTO</h2>
             <div class="timer-display" id="display-time">00:00</div>
-            
+
             <div class="mb-2">
                 <span class="round-text" id="label-round">PELEA: 1 / 6</span>
             </div>
-           <div class="botones-container">
-    <div class="botones-container-inner">
-        <button class="btn btn-primary custom-btn shadow" id="btn-pausa" onclick="togglePausa()">
-            PAUSA
-        </button>
-        
-        <button class="btn btn-warning custom-btn shadow text-dark" id="btn-reiniciar" onclick="reiniciarRound()">
-            REINICIAR
-        </button>
-        
-        <button class="btn btn-outline-light custom-btn shadow" onclick="location.reload()">
-            SALIR
-        </button>
-    </div>
-</div>
+
+            <div class="botones-container">
+                <div class="botones-container-inner">
+                    <button class="btn btn-primary custom-btn shadow" id="btn-pausa" onclick="togglePausa()">
+                        PAUSA
+                    </button>
+                    <button class="btn btn-warning custom-btn shadow text-dark" id="btn-reiniciar" onclick="reiniciarRound()">
+                        REINICIAR
+                    </button>
+                    <button class="btn btn-outline-light custom-btn shadow" onclick="location.reload()">
+                        SALIR
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

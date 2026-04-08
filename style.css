@@ -1,8 +1,10 @@
 :root {
-    --work-bg: radial-gradient(circle, #131313 0%, #131313 100%);
-    --rest-bg: radial-gradient(circle, #00d2ad 0%, #006b56 100%);
-    --danger-bg: radial-gradient(circle, #ff4757 0%, #800000 100%);
+    --work-bg:    radial-gradient(circle, #131313 0%, #131313 100%);
+    --rest-bg:    radial-gradient(circle, #00d2ad 0%, #006b56 100%);
+    --danger-bg:  radial-gradient(circle, #ff4757 0%, #800000 100%);
     --default-bg: radial-gradient(circle, #222 0%, #000 100%);
+    --accent:     #00d2ad;
+    --accent2:    #ffc107;
 }
 
 body {
@@ -19,7 +21,7 @@ body {
     align-items: center;
 }
 
-/* --- LOGOS --- */
+/* ===================== LOGOS ===================== */
 .logo-gigante {
     width: 450px;
     max-height: 30vh;
@@ -27,33 +29,46 @@ body {
 }
 
 .logo-pequeno {
-    width: 200px; 
-    max-height: 200px; 
+    width: 200px;
+    max-height: 200px;
     object-fit: contain;
     margin-bottom: 5px;
     filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
 }
 
-/* --- TEXTOS DEL CRONÓMETRO --- */
+/* ===================== RELOJ INICIO ===================== */
 #hora-actual {
     font-size: 14rem;
     font-family: 'Courier New', monospace;
     font-weight: 900;
     line-height: 1;
     text-shadow: 8px 8px 0px rgba(0,0,0,0.8);
-    display: flex; /* Alinea los elementos en línea */
-    align-items: baseline; /* Los mantiene pegados al suelo de la letra */
-    letter-spacing: -10px; /* Compacta los números */
+    display: flex;
+    align-items: baseline;
+    letter-spacing: -10px;
 }
 
-/* Estilo para el AM/PM */
 .sufijo {
-    font-size: 4rem; /* Mucho más pequeño para que no robe espacio */
-    margin-left: 10px; /* Un pequeño respiro respecto a los segundos */
-    letter-spacing: normal; /* Que las letras AM no se encimen tanto */
+    font-size: 4rem;
+    margin-left: 10px;
+    letter-spacing: normal;
     vertical-align: middle;
 }
 
+/* ===================== RELOJ PEQUEÑO EN TIMER ===================== */
+#reloj-timer {
+    position: fixed;
+    top: 20px;
+    right: 40px;
+    font-family: 'Courier New', monospace;
+    font-size: 4rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.75);
+    letter-spacing: 3px;
+    user-select: none;
+}
+
+/* ===================== TIMER ===================== */
 .status-text {
     font-size: 3rem;
     text-transform: uppercase;
@@ -61,40 +76,39 @@ body {
 }
 
 .timer-display {
-    font-size: 10rem; 
+    font-size: 10rem;
     font-weight: 800;
     line-height: 0.8;
     text-shadow: 10px 10px 0px rgba(0,0,0,0.6);
     margin: 10px 0;
 }
 
-.round-text { 
-    font-size: 3rem; 
+.round-text {
+    font-size: 3rem;
     font-weight: 900;
     text-shadow: 4px 4px 6px rgba(0,0,0,0.5);
 }
 
-/* --- SISTEMA DE BOTONES (ESTILO COMPACTO Y CENTRADO) --- */
+/* ===================== BOTONES TIMER ===================== */
 .botones-container {
     display: flex;
-    justify-content: center; /* Centra el bloque en la pantalla */
+    justify-content: center;
     align-items: center;
     width: 100%;
     margin-top: 35px;
 }
 
-/* Contenedor interno para agrupar los 3 botones en una fila */
 .botones-container-inner {
     display: flex;
     justify-content: center;
-    gap: 25px; /* Espacio horizontal entre botones */
+    gap: 25px;
     width: auto;
     padding-bottom: 20px;
 }
 
 .custom-btn {
-    width: 300px;  /* Ancho reducido para que no se peguen */
-    height: 60px;  /* Altura controlada */
+    width: 300px;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -107,44 +121,202 @@ body {
     padding: 0 !important;
 }
 
-.custom-btn:active {
-    transform: scale(0.95);
-}
+.custom-btn:active { transform: scale(0.95); }
 
-/* Colores de los botones */
-.btn-primary { 
-    background-color: #0d6efd !important; 
-    border-color: #0d6efd !important; 
-}
-
-.btn-warning { 
-    background-color: #ffc107 !important; 
-    border-color: #ffc107 !important; 
-    color: black !important;
-}
-
-.btn-outline-light { 
-    border: 3px solid white !important; 
-    background-color: transparent !important;
-    color: white !important;
-}
+.btn-primary       { background-color: #0d6efd !important; border-color: #0d6efd !important; }
+.btn-warning       { background-color: #ffc107 !important; border-color: #ffc107 !important; color: black !important; }
+.btn-outline-light { border: 3px solid white !important; background-color: transparent !important; color: white !important; }
 
 button:disabled {
     opacity: 0.2 !important;
     filter: grayscale(1);
 }
 
-/* --- PANEL CONFIGURACIÓN --- */
+/* ===================== PANEL CONFIGURACIÓN ===================== */
 .config-card {
-    background: white;
-    color: #000;
-    border-radius: 30px;
-    width: 500px;
-    border-top: 15px solid #00d2ad;
+    background: #111;
+    color: white;
+    border-radius: 24px;
+    width: 620px;
+    border-top: 6px solid var(--accent);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 60px rgba(0, 210, 173, 0.15);
 }
 
-.custom-input { 
-    font-size: 2.5rem !important; 
-    font-weight: 900; 
-    text-align: center; 
+.config-titulo {
+    font-size: 2rem;
+    letter-spacing: 4px;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 16px;
 }
+
+.config-label-seccion {
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/* --- MODOS GRID --- */
+.modos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.modo-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 14px 8px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Arial Black', sans-serif;
+}
+
+.modo-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: white;
+}
+
+.modo-btn.activo {
+    background: rgba(0, 210, 173, 0.15);
+    border-color: var(--accent);
+    color: white;
+    box-shadow: 0 0 16px rgba(0, 210, 173, 0.3);
+}
+
+.modo-icono  { font-size: 1.6rem; }
+.modo-nombre { font-size: 0.95rem; font-weight: 900; letter-spacing: 1px; }
+.modo-detalle { font-size: 0.7rem; color: rgba(255,255,255,0.45); text-align: center; letter-spacing: 0.5px; }
+
+/* --- SEPARADOR --- */
+.config-separador {
+    text-align: center;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.25);
+    font-weight: 700;
+    margin: 20px 0 14px;
+    position: relative;
+}
+
+.config-separador::before,
+.config-separador::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28%;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+}
+.config-separador::before { left: 0; }
+.config-separador::after  { right: 0; }
+
+/* --- INPUTS --- */
+.config-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.07);
+}
+
+.config-label {
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.75);
+    margin: 0;
+}
+
+.config-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.config-input {
+    width: 100px;
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-family: 'Arial Black', sans-serif;
+    text-align: center;
+    padding: 4px 0;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.config-input:focus {
+    border-color: var(--accent);
+    background: rgba(0, 210, 173, 0.08);
+}
+
+/* Quitar flechas del número en Chrome/Safari */
+.config-input::-webkit-inner-spin-button,
+.config-input::-webkit-outer-spin-button { opacity: 0.3; }
+
+.config-unidad {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.35);
+    font-weight: 700;
+    letter-spacing: 1px;
+    width: 24px;
+}
+
+/* --- BOTONES CONFIG --- */
+.btn-iniciar {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 14px;
+    color: #000;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 0 30px rgba(0, 210, 173, 0.4);
+}
+
+.btn-iniciar:hover  { opacity: 0.9; }
+.btn-iniciar:active { transform: scale(0.98); }
+
+.btn-volver {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    padding: 8px;
+    transition: color 0.2s;
+}
+
+.btn-volver:hover { color: rgba(255,255,255,0.7); }
