@@ -1,5 +1,5 @@
 // ===================== CONFIGURACIÓN =====================
-var YT_API_KEY = (typeof CONFIG !== 'undefined') ? CONFIG.YT_API_KEY : '';
+var YT_API_KEY = 'AIzaSyCqMTP8vPte4UMbRlfpxg5aRxdNrMUf5-A';
 
 var musicaSeleccionada = null;
 var musicaPausada      = false;
