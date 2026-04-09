@@ -24,6 +24,10 @@ function onYouTubeIframeAPIReady() {
             onReady: function() {
                 ytReady = true;
                 ytPlayer.setVolume(70);
+            },
+            onStateChange: function(e) {
+                // Cuando termina la canción (estado 0), pasa a la siguiente
+                if (e.data === 0) siguienteCancion();
             }
         }
     });
