@@ -1,5 +1,5 @@
 // ===================== CONFIGURACIÓN =====================
-const YT_API_KEY = 'AIzaSyCqMTP8vPte4UMbRlfpxg5aRxdNrMUf5-A';
+var YT_API_KEY = (typeof CONFIG !== 'undefined') ? CONFIG.YT_API_KEY : '';
 
 var musicaSeleccionada = null;
 var musicaPausada      = false;
@@ -236,21 +236,11 @@ var sonidoFinal    = new Audio('alarma.mp3');
 var sonidoPitido   = new Audio('pitido.mp3');
 var sonidoAplausos = new Audio('aplausos.mp3');
 
-function playSound(audio, bajarMusica) {
+function playSound(audio) {
     if (!audio) return;
     audio.pause();
     audio.currentTime = 0;
-
-    if (bajarMusica && ytPlayer && musicaSeleccionada && !musicaPausada) {
-        var volBajo = Math.max(0, volumenActual - 30);
-        ytPlayer.setVolume(volBajo);
-        audio.onended = function() {
-            ytPlayer.setVolume(volumenActual);
-            audio.onended = null;
-        };
-    }
-
-    setTimeout(function() { audio.play().catch(function() {}); }, 100);
+    audio.play().catch(function() {});
 }
 
 function format(s) {
@@ -265,12 +255,11 @@ function togglePausa() {
     if (isPaused) {
         btn.textContent = 'REANUDAR';
         btn.className   = 'tbtn tbtn-success';
-        if (ytPlayer && !musicaPausada) ytPlayer.pauseVideo();
     } else {
         btn.textContent = 'PAUSA';
         btn.className   = 'tbtn tbtn-primary';
-        if (ytPlayer && !musicaPausada && musicaSeleccionada) ytPlayer.playVideo();
     }
+    // La música sigue sonando siempre, independiente del timer
 }
 
 function reiniciarRound() {
@@ -290,6 +279,11 @@ function prepararEntrenamiento() {
     restTimeFijo = Math.round(restVal * 60);
     roundTotal   = roundsVal;
     roundActual  = 1;
+
+    // Desbloquear todos los audios con el clic del usuario (necesario en TV)
+    [sonidoFinal, sonidoPitido, sonidoAplausos].forEach(function(a) {
+        a.play().then(function() { a.pause(); a.currentTime = 0; }).catch(function() {});
+    });
 
     document.getElementById('panel-config').style.display = 'none';
     document.getElementById('panel-timer').style.display  = 'flex';
@@ -330,7 +324,7 @@ function iniciarFase(segundos, esTrabajo) {
     timeSecs      = segundos;
     esFaseTrabajo = esTrabajo;
     document.getElementById('label-round').textContent = 'ROUND: ' + roundActual + ' / ' + roundTotal;
-    playSound(sonidoFinal, true);
+    playSound(sonidoFinal);
     if (interval) clearInterval(interval);
 
     interval = setInterval(function() {
