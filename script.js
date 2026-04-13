@@ -21,9 +21,11 @@ function onYouTubeIframeAPIReady() {
         height: '1', width: '1',
         playerVars: { autoplay: 0, controls: 0, playsinline: 1 },
         events: {
-            onReady: function() {
+            onReady: function(e) {
                 ytReady = true;
                 ytPlayer.setVolume(70);
+                // Necesario para que Chrome y Brave permitan reproducción
+                e.target.getIframe().setAttribute('allow', 'autoplay');
             },
             onStateChange: function(e) {
                 // Cuando termina la canción (estado 0), pasa a la siguiente
@@ -131,16 +133,35 @@ function seleccionarMusica(info, el) {
 
 // ===================== REPRODUCCIÓN =====================
 function activarMusica() {
-    if (!musicaSeleccionada || !ytReady) return;
+    if (!musicaSeleccionada) return;
+    if (!ytReady) {
+        document.getElementById('music-bar-estado').textContent = '⏳ Cargando reproductor...';
+        setTimeout(function() {
+            if (ytReady) activarMusica();
+            else document.getElementById('music-bar-estado').textContent = '⚠️ Reproductor no disponible';
+        }, 2000);
+        return;
+    }
+    document.getElementById('music-bar-estado').textContent = '';
     reproducir();
+    document.getElementById('btn-activar-musica').style.display = 'none';
+    document.getElementById('btn-ant-cancion').style.display    = 'inline-flex';
+    document.getElementById('btn-music-toggle').style.display   = 'inline-flex';
+    document.getElementById('btn-sig-cancion').style.display    = 'inline-flex';
+    document.getElementById('btn-music-toggle').textContent     = '⏸';
 }
 
 function reproducir() {
     volumenActual = parseInt(document.getElementById('music-volume-timer').value);
-    ytPlayer.setVolume(volumenActual);
-    ytPlayer.loadVideoById(musicaSeleccionada.id); // loadVideoById ya inicia la reproducción
+    // Chrome/Brave: muted autoplay siempre está permitido → luego dessilenciamos
+    ytPlayer.mute();
+    ytPlayer.loadVideoById(musicaSeleccionada.id);
+    ytPlayer.playVideo();
+    setTimeout(function() {
+        ytPlayer.unMute();
+        ytPlayer.setVolume(volumenActual);
+    }, 800);
     musicaPausada = false;
-    // Actualizar barra con canción actual
     document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
     document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
 }
@@ -341,7 +362,7 @@ function prepararEntrenamiento() {
     document.getElementById('panel-timer').style.display  = 'flex';
     document.getElementById('btn-reiniciar').disabled     = true;
 
-    // Iniciar música automáticamente si hay canción seleccionada
+    // Reproducir música directamente desde el clic de INICIAR
     if (musicaSeleccionada) {
         document.getElementById('music-bar').style.display           = 'flex';
         document.getElementById('music-bar-thumb').src               = musicaSeleccionada.thumb;
@@ -351,7 +372,22 @@ function prepararEntrenamiento() {
         document.getElementById('btn-music-toggle').style.display    = 'inline-flex';
         document.getElementById('btn-sig-cancion').style.display     = 'inline-flex';
         document.getElementById('btn-music-toggle').textContent      = '⏸';
-        reproducir();
+        if (ytReady) {
+            reproducir();
+        } else {
+            // API aún cargando — esperar y reintentar
+            var intentos = 0;
+            var esperar = setInterval(function() {
+                intentos++;
+                if (ytReady) {
+                    clearInterval(esperar);
+                    reproducir();
+                } else if (intentos >= 10) {
+                    clearInterval(esperar);
+                    document.getElementById('music-bar-estado').textContent = '⚠️ Reproductor no disponible';
+                }
+            }, 500);
+        }
     }
 
     var prepTime = 40;
