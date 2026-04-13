@@ -28,13 +28,16 @@ function onYouTubeIframeAPIReady() {
             },
             onStateChange: function(e) {
                 // Estado 0 = video terminado → pasar a la siguiente canción
-                // El guard evita llamadas múltiples mientras carga la nueva
                 if (e.data === 0 && !ytCambiando) {
                     ytCambiando = true;
                     setTimeout(function() {
                         siguienteCancion();
                         setTimeout(function() { ytCambiando = false; }, 1500);
                     }, 300);
+                }
+                // Estado -1 = no iniciado (común en TV tras loadVideoById) → forzar play
+                if (e.data === -1 && musicaSeleccionada && !musicaPausada) {
+                    setTimeout(function() { ytPlayer.playVideo(); }, 200);
                 }
             }
         }
@@ -144,12 +147,16 @@ function activarMusica() {
 }
 
 function reproducir() {
+    if (!ytReady || !musicaSeleccionada) return;
     volumenActual = parseInt(document.getElementById('music-volume-timer').value);
     ytPlayer.setVolume(volumenActual);
     ytPlayer.loadVideoById(musicaSeleccionada.id);
-    setTimeout(function() { ytPlayer.playVideo(); }, 500);
+    // Doble intento: el TV a veces necesita más tiempo para responder
+    setTimeout(function() { ytPlayer.playVideo(); }, 400);
+    setTimeout(function() {
+        if (ytPlayer.getPlayerState() !== 1) ytPlayer.playVideo();
+    }, 1500);
     musicaPausada = false;
-    // Actualizar barra con canción actual
     document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
     document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
 }
