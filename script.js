@@ -5,7 +5,6 @@ var musicaSeleccionada = null;
 var musicaPausada      = false;
 var ytPlayer           = null;
 var ytReady            = false;
-var ytCambiando        = false;
 var colaMusica         = [];   // lista completa de resultados
 var colaIndex          = 0;    // canción actual en la cola
 var volumenActual      = 70;   // volumen en uso
@@ -27,15 +26,8 @@ function onYouTubeIframeAPIReady() {
                 ytPlayer.setVolume(70);
             },
             onStateChange: function(e) {
-                // Estado 0 = video terminado → pasar a la siguiente canción
-                // El guard evita llamadas múltiples mientras carga la nueva
-                if (e.data === 0 && !ytCambiando) {
-                    ytCambiando = true;
-                    setTimeout(function() {
-                        siguienteCancion();
-                        setTimeout(function() { ytCambiando = false; }, 1500);
-                    }, 300);
-                }
+                // Cuando termina la canción (estado 0), pasa a la siguiente
+                if (e.data === 0) siguienteCancion();
             }
         }
     });
