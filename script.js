@@ -19,7 +19,6 @@ var volumenActual      = 70;   // volumen en uso
 
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-player', {
-        height: '1', width: '1',
         playerVars: { autoplay: 0, controls: 0, playsinline: 1 },
         events: {
             onReady: function() {

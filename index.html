@@ -157,8 +157,12 @@
 
     </div>
 
-    <!-- Player de YouTube -->
-    <div id="yt-player"></div>
+    <!-- Player de YouTube — iframe con allow="autoplay" para Chrome -->
+    <iframe id="yt-player"
+        src="https://www.youtube.com/embed/?enablejsapi=1"
+        allow="autoplay; encrypted-media"
+        frameborder="0">
+    </iframe>
 
     <script src="script.js"></script>
 </body>
