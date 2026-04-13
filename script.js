@@ -27,6 +27,14 @@ function onYouTubeIframeAPIReady() {
                 ytPlayer.setVolume(70);
             },
             onStateChange: function(e) {
+                // Estado 1 = reproduciendo → ocultar ACTIVAR, mostrar controles
+                if (e.data === 1) {
+                    document.getElementById('btn-activar-musica').style.display = 'none';
+                    document.getElementById('btn-ant-cancion').style.display    = 'inline-flex';
+                    document.getElementById('btn-music-toggle').style.display   = 'inline-flex';
+                    document.getElementById('btn-sig-cancion').style.display    = 'inline-flex';
+                    document.getElementById('btn-music-toggle').textContent     = '⏸';
+                }
                 // Estado 0 = video terminado → pasar a la siguiente canción
                 if (e.data === 0 && !ytCambiando) {
                     ytCambiando = true;
@@ -147,7 +155,7 @@ function activarMusica() {
 }
 
 function reproducir() {
-    if (!ytReady || !musicaSeleccionada) return;
+    if (!ytPlayer || !musicaSeleccionada) return;
     volumenActual = parseInt(document.getElementById('music-volume-timer').value);
     ytPlayer.setVolume(volumenActual);
     ytPlayer.loadVideoById(musicaSeleccionada.id);
@@ -237,6 +245,7 @@ function aplicarModo(modo) {
 
 // ===================== NAVEGACIÓN =====================
 function mostrarConfiguracion() {
+    initAudio(); // Inicializar con el gesto del usuario antes de que empiece todo
     document.getElementById('pantalla-inicio').style.display = 'none';
     document.getElementById('panel-config').style.display    = 'flex';
     aplicarModo('clase1');
@@ -367,23 +376,16 @@ function prepararEntrenamiento() {
     roundTotal   = roundsVal;
     roundActual  = 1;
 
-    // Inicializar Web Audio con el gesto del usuario (necesario en TV)
-    initAudio();
-
     document.getElementById('panel-config').style.display = 'none';
     document.getElementById('panel-timer').style.display  = 'flex';
     document.getElementById('btn-reiniciar').disabled     = true;
 
     // Iniciar música automáticamente si hay canción seleccionada
+    // Los controles (⏮⏸⏭) se mostrarán solos cuando onStateChange confirme que está sonando
     if (musicaSeleccionada) {
-        document.getElementById('music-bar').style.display           = 'flex';
-        document.getElementById('music-bar-thumb').src               = musicaSeleccionada.thumb;
-        document.getElementById('music-bar-titulo').textContent      = musicaSeleccionada.titulo;
-        document.getElementById('btn-activar-musica').style.display  = 'none';
-        document.getElementById('btn-ant-cancion').style.display     = 'inline-flex';
-        document.getElementById('btn-music-toggle').style.display    = 'inline-flex';
-        document.getElementById('btn-sig-cancion').style.display     = 'inline-flex';
-        document.getElementById('btn-music-toggle').textContent      = '⏸';
+        document.getElementById('music-bar').style.display      = 'flex';
+        document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
+        document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
         reproducir();
     }
 
