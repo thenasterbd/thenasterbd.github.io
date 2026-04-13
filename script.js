@@ -27,14 +27,6 @@ function onYouTubeIframeAPIReady() {
                 ytPlayer.setVolume(70);
             },
             onStateChange: function(e) {
-                // Estado 1 = reproduciendo → ocultar ACTIVAR, mostrar controles
-                if (e.data === 1) {
-                    document.getElementById('btn-activar-musica').style.display = 'none';
-                    document.getElementById('btn-ant-cancion').style.display    = 'inline-flex';
-                    document.getElementById('btn-music-toggle').style.display   = 'inline-flex';
-                    document.getElementById('btn-sig-cancion').style.display    = 'inline-flex';
-                    document.getElementById('btn-music-toggle').textContent     = '⏸';
-                }
                 // Estado 0 = video terminado → pasar a la siguiente canción
                 if (e.data === 0 && !ytCambiando) {
                     ytCambiando = true;
@@ -45,7 +37,7 @@ function onYouTubeIframeAPIReady() {
                 }
                 // Estado -1 = no iniciado (común en TV tras loadVideoById) → forzar play
                 if (e.data === -1 && musicaSeleccionada && !musicaPausada) {
-                    setTimeout(function() { ytPlayer.playVideo(); }, 200);
+                    setTimeout(function() { try { ytPlayer.playVideo(); } catch(e) {} }, 200);
                 }
             }
         }
@@ -150,23 +142,22 @@ function seleccionarMusica(info, el) {
 
 // ===================== REPRODUCCIÓN =====================
 function activarMusica() {
-    if (!musicaSeleccionada || !ytPlayer) return;
+    if (!musicaSeleccionada) return;
     reproducir();
 }
 
 function reproducir() {
-    if (!ytPlayer || !musicaSeleccionada) return;
-    volumenActual = parseInt(document.getElementById('music-volume-timer').value);
-    ytPlayer.setVolume(volumenActual);
-    ytPlayer.loadVideoById(musicaSeleccionada.id);
-    // Doble intento: el TV a veces necesita más tiempo para responder
-    setTimeout(function() { ytPlayer.playVideo(); }, 400);
-    setTimeout(function() {
-        if (ytPlayer.getPlayerState() !== 1) ytPlayer.playVideo();
-    }, 1500);
-    musicaPausada = false;
-    document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
-    document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
+    if (!musicaSeleccionada) return;
+    try {
+        volumenActual = parseInt(document.getElementById('music-volume-timer').value);
+        ytPlayer.setVolume(volumenActual);
+        ytPlayer.loadVideoById(musicaSeleccionada.id);
+        setTimeout(function() { try { ytPlayer.playVideo(); } catch(e) {} }, 400);
+        setTimeout(function() { try { ytPlayer.playVideo(); } catch(e) {} }, 1500);
+        musicaPausada = false;
+        document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
+        document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
+    } catch(e) {}
 }
 
 function toggleMusica() {
@@ -381,11 +372,15 @@ function prepararEntrenamiento() {
     document.getElementById('btn-reiniciar').disabled     = true;
 
     // Iniciar música automáticamente si hay canción seleccionada
-    // Los controles (⏮⏸⏭) se mostrarán solos cuando onStateChange confirme que está sonando
     if (musicaSeleccionada) {
-        document.getElementById('music-bar').style.display      = 'flex';
-        document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
-        document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
+        document.getElementById('music-bar').style.display           = 'flex';
+        document.getElementById('music-bar-thumb').src               = musicaSeleccionada.thumb;
+        document.getElementById('music-bar-titulo').textContent      = musicaSeleccionada.titulo;
+        document.getElementById('btn-activar-musica').style.display  = 'none';
+        document.getElementById('btn-ant-cancion').style.display     = 'inline-flex';
+        document.getElementById('btn-music-toggle').style.display    = 'inline-flex';
+        document.getElementById('btn-sig-cancion').style.display     = 'inline-flex';
+        document.getElementById('btn-music-toggle').textContent      = '⏸';
         reproducir();
     }
 
