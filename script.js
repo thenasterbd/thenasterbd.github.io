@@ -138,8 +138,7 @@ function activarMusica() {
 function reproducir() {
     volumenActual = parseInt(document.getElementById('music-volume-timer').value);
     ytPlayer.setVolume(volumenActual);
-    ytPlayer.loadVideoById(musicaSeleccionada.id);
-    setTimeout(function() { ytPlayer.playVideo(); }, 500);
+    ytPlayer.loadVideoById(musicaSeleccionada.id); // loadVideoById ya inicia la reproducción
     musicaPausada = false;
     // Actualizar barra con canción actual
     document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
@@ -236,15 +235,66 @@ var isPaused      = false;
 var workTimeFijo, restTimeFijo;
 var esFaseTrabajo = true;
 
-var sonidoFinal    = new Audio('alarma.mp3');
-var sonidoPitido   = new Audio('pitido.mp3');
-var sonidoAplausos = new Audio('aplausos.mp3');
+// Web Audio API — genera los sonidos con osciladores, sin depender de archivos mp3
+var audioCtx = null;
 
-function playSound(audio) {
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
-    audio.play().catch(function() {});
+function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+
+function playSound(nombre) {
+    var ctx = getAudioCtx();
+    var now = ctx.currentTime;
+
+    if (nombre === 'alarma') {
+        // Campana de ring de boxeo: 4 golpes metálicos con armónicos
+        // Cada golpe usa 3 osciladores desafinados para lograr el timbre metálico
+        var parciales = [
+            { freq: 820,  gain: 1.0,  decay: 1.6 },
+            { freq: 1640, gain: 0.5,  decay: 1.1 },
+            { freq: 2257, gain: 0.25, decay: 0.7 }
+        ];
+        var golpeGap = 0.9; // segundos entre cada golpe
+
+        for (var g = 0; g < 4; g++) {
+            var t = now + g * golpeGap;
+            parciales.forEach(function(p) {
+                var osc  = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = p.freq;
+                gain.gain.setValueAtTime(p.gain, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + p.decay);
+                osc.start(t); osc.stop(t + p.decay);
+            });
+        }
+
+    } else if (nombre === 'pitido') {
+        // Pitido corto y agudo
+        var osc  = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 1000;
+        gain.gain.setValueAtTime(0.9, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.start(now); osc.stop(now + 0.25);
+
+    } else if (nombre === 'aplausos') {
+        // 3 pitidos ascendentes (aviso de últimos 10 segundos)
+        [660, 880, 1100].forEach(function(freq, i) {
+            var osc  = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            var t = now + i * 0.18;
+            gain.gain.setValueAtTime(0.7, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            osc.start(t); osc.stop(t + 0.15);
+        });
+    }
 }
 
 function format(s) {
@@ -284,10 +334,8 @@ function prepararEntrenamiento() {
     roundTotal   = roundsVal;
     roundActual  = 1;
 
-    // Desbloquear todos los audios con el clic del usuario (necesario en TV)
-    [sonidoFinal, sonidoPitido, sonidoAplausos].forEach(function(a) {
-        a.play().then(function() { a.pause(); a.currentTime = 0; }).catch(function() {});
-    });
+    // Desbloquear AudioContext con el clic del usuario
+    getAudioCtx();
 
     document.getElementById('panel-config').style.display = 'none';
     document.getElementById('panel-timer').style.display  = 'flex';
@@ -313,7 +361,7 @@ function prepararEntrenamiento() {
     var prepInterval = setInterval(function() {
         if (!isPaused) {
             document.getElementById('display-time').textContent = format(prepTime);
-            if (prepTime <= 3 && prepTime > 0) playSound(sonidoPitido);
+            if (prepTime <= 3 && prepTime > 0) playSound('pitido');
             if (prepTime <= 0) {
                 clearInterval(prepInterval);
                 document.getElementById('btn-reiniciar').disabled = false;
@@ -328,7 +376,7 @@ function iniciarFase(segundos, esTrabajo) {
     timeSecs      = segundos;
     esFaseTrabajo = esTrabajo;
     document.getElementById('label-round').textContent = 'ROUND: ' + roundActual + ' / ' + roundTotal;
-    playSound(sonidoFinal);
+    playSound('alarma');
     if (interval) clearInterval(interval);
 
     interval = setInterval(function() {
@@ -338,12 +386,12 @@ function iniciarFase(segundos, esTrabajo) {
             if (esTrabajo) {
                 document.getElementById('label-status').textContent = '¡COMBATE!';
                 document.body.style.background = timeSecs <= 10 ? 'var(--danger-bg)' : 'var(--work-bg)';
-                if (timeSecs === 10) playSound(sonidoAplausos);
-                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido);
+                if (timeSecs === 10) playSound('aplausos');
+                if (timeSecs <= 3 && timeSecs > 0) playSound('pitido');
             } else {
                 document.getElementById('label-status').textContent = 'DESCANSO';
                 document.body.style.background = 'var(--rest-bg)';
-                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido);
+                if (timeSecs <= 3 && timeSecs > 0) playSound('pitido');
             }
 
             if (timeSecs <= 0) {
@@ -369,7 +417,7 @@ function pasarSiguienteRound() {
 }
 
 function finalizar() {
-    playSound(sonidoFinal);
+    playSound('alarma');
     if (ytPlayer && musicaSeleccionada) ytPlayer.stopVideo();
     document.body.style.background = 'var(--default-bg)';
     document.getElementById('label-status').textContent    = 'COMBATES COMPLETADOS';
