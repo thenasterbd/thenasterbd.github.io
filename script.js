@@ -150,7 +150,7 @@ function seleccionarMusica(info, el) {
 
 // ===================== REPRODUCCIÓN =====================
 function activarMusica() {
-    if (!musicaSeleccionada || !ytReady) return;
+    if (!musicaSeleccionada || !ytPlayer) return;
     reproducir();
 }
 
