@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Crear config.js con la API Key
+        run: |
+          echo "var CONFIG = { YT_API_KEY: '${{ secrets.YT_API_KEY }}' };" > config.js
+
+      - name: Deploy a GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./

@@ -19,6 +19,7 @@ var volumenActual      = 70;   // volumen en uso
 
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-player', {
+        height: '1', width: '1',
         playerVars: { autoplay: 0, controls: 0, playsinline: 1 },
         events: {
             onReady: function() {
@@ -27,16 +28,13 @@ function onYouTubeIframeAPIReady() {
             },
             onStateChange: function(e) {
                 // Estado 0 = video terminado → pasar a la siguiente canción
+                // El guard evita llamadas múltiples mientras carga la nueva
                 if (e.data === 0 && !ytCambiando) {
                     ytCambiando = true;
                     setTimeout(function() {
                         siguienteCancion();
                         setTimeout(function() { ytCambiando = false; }, 1500);
                     }, 300);
-                }
-                // Estado -1 = no iniciado (común en TV tras loadVideoById) → forzar play
-                if (e.data === -1 && musicaSeleccionada && !musicaPausada) {
-                    setTimeout(function() { try { ytPlayer.playVideo(); } catch(e) {} }, 200);
                 }
             }
         }
@@ -151,6 +149,7 @@ function reproducir() {
     ytPlayer.loadVideoById(musicaSeleccionada.id);
     setTimeout(function() { ytPlayer.playVideo(); }, 500);
     musicaPausada = false;
+    // Actualizar barra con canción actual
     document.getElementById('music-bar-thumb').src          = musicaSeleccionada.thumb;
     document.getElementById('music-bar-titulo').textContent = musicaSeleccionada.titulo;
 }
@@ -231,7 +230,6 @@ function aplicarModo(modo) {
 
 // ===================== NAVEGACIÓN =====================
 function mostrarConfiguracion() {
-    initAudio(); // Inicializar con el gesto del usuario antes de que empiece todo
     document.getElementById('pantalla-inicio').style.display = 'none';
     document.getElementById('panel-config').style.display    = 'flex';
     aplicarModo('clase1');
@@ -246,83 +244,15 @@ var isPaused      = false;
 var workTimeFijo, restTimeFijo;
 var esFaseTrabajo = true;
 
-// ===================== AUDIO (Web Audio API — no conflicta con YouTube en TV) =====================
-var audioCtx = null;
+var sonidoFinal    = new Audio('alarma.mp3');
+var sonidoPitido   = new Audio('pitido.mp3');
+var sonidoAplausos = new Audio('aplausos.mp3');
 
-function initAudio() {
-    if (audioCtx) return;
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch(e) {}
-}
-
-function beep(freq, dur, vol, type, delay) {
-    if (!audioCtx) return;
-    try {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        var t    = audioCtx.currentTime + (delay || 0);
-        var osc  = audioCtx.createOscillator();
-        var gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.type           = type || 'square';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(vol || 0.8, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-        osc.start(t);
-        osc.stop(t + dur + 0.05);
-    } catch(e) {}
-}
-
-// Golpe de campana: múltiples armónicos inarmónicos con ataque rápido y resonancia larga
-function campanada(delay) {
-    if (!audioCtx) return;
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    // Parciales típicos de una campana real (relaciones inarmónicas)
-    var base = 620;
-    var parciales = [
-        { mult: 1,     vol: 0.38, dur: 3.5 },
-        { mult: 2,     vol: 0.30, dur: 2.8 },
-        { mult: 2.756, vol: 0.26, dur: 2.2 },
-        { mult: 3.0,   vol: 0.22, dur: 1.8 },
-        { mult: 4.0,   vol: 0.16, dur: 1.3 },
-        { mult: 5.404, vol: 0.12, dur: 0.9 }
-    ];
-    parciales.forEach(function(p) {
-        try {
-            var t    = audioCtx.currentTime + (delay || 0);
-            var osc  = audioCtx.createOscillator();
-            var gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.type            = 'sine';
-            osc.frequency.value = base * p.mult;
-            // Ataque muy rápido (golpe) + decaimiento exponencial largo (resonancia)
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(p.vol, t + 0.004);
-            gain.gain.exponentialRampToValueAtTime(0.001, t + p.dur);
-            osc.start(t);
-            osc.stop(t + p.dur + 0.1);
-        } catch(e) {}
-    });
-}
-
-// 3 campanadas con separación de 1 segundo
-function playAlarma() {
-    campanada(0.0);
-    campanada(1.0);
-    campanada(2.0);
-}
-
-// Pitido corto de cuenta regresiva (últimos 3 segundos)
-function playPitido() {
-    beep(1100, 0.12, 0.75, 'sine', 0);
-}
-
-// Aviso de 10 segundos restantes: dos tonos ascendentes
-function playAplausos() {
-    beep(660, 0.15, 0.7, 'sine', 0.00);
-    beep(990, 0.15, 0.7, 'sine', 0.22);
+function playSound(audio) {
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch(function() {});
 }
 
 function format(s) {
@@ -362,6 +292,11 @@ function prepararEntrenamiento() {
     roundTotal   = roundsVal;
     roundActual  = 1;
 
+    // Desbloquear todos los audios con el clic del usuario (necesario en TV)
+    [sonidoFinal, sonidoPitido, sonidoAplausos].forEach(function(a) {
+        a.play().then(function() { a.pause(); a.currentTime = 0; }).catch(function() {});
+    });
+
     document.getElementById('panel-config').style.display = 'none';
     document.getElementById('panel-timer').style.display  = 'flex';
     document.getElementById('btn-reiniciar').disabled     = true;
@@ -386,7 +321,7 @@ function prepararEntrenamiento() {
     var prepInterval = setInterval(function() {
         if (!isPaused) {
             document.getElementById('display-time').textContent = format(prepTime);
-            if (prepTime <= 3 && prepTime > 0) playPitido();
+            if (prepTime <= 3 && prepTime > 0) playSound(sonidoPitido);
             if (prepTime <= 0) {
                 clearInterval(prepInterval);
                 document.getElementById('btn-reiniciar').disabled = false;
@@ -401,7 +336,7 @@ function iniciarFase(segundos, esTrabajo) {
     timeSecs      = segundos;
     esFaseTrabajo = esTrabajo;
     document.getElementById('label-round').textContent = 'ROUND: ' + roundActual + ' / ' + roundTotal;
-    playAlarma();
+    playSound(sonidoFinal);
     if (interval) clearInterval(interval);
 
     interval = setInterval(function() {
@@ -411,12 +346,12 @@ function iniciarFase(segundos, esTrabajo) {
             if (esTrabajo) {
                 document.getElementById('label-status').textContent = '¡COMBATE!';
                 document.body.style.background = timeSecs <= 10 ? 'var(--danger-bg)' : 'var(--work-bg)';
-                if (timeSecs === 10) playAplausos();
-                if (timeSecs <= 3 && timeSecs > 0) playPitido();
+                if (timeSecs === 10) playSound(sonidoAplausos);
+                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido);
             } else {
                 document.getElementById('label-status').textContent = 'DESCANSO';
                 document.body.style.background = 'var(--rest-bg)';
-                if (timeSecs <= 3 && timeSecs > 0) playPitido();
+                if (timeSecs <= 3 && timeSecs > 0) playSound(sonidoPitido);
             }
 
             if (timeSecs <= 0) {
@@ -442,7 +377,7 @@ function pasarSiguienteRound() {
 }
 
 function finalizar() {
-    playAlarma();
+    playSound(sonidoFinal);
     if (ytPlayer && musicaSeleccionada) ytPlayer.stopVideo();
     document.body.style.background = 'var(--default-bg)';
     document.getElementById('label-status').textContent    = 'COMBATES COMPLETADOS';
