@@ -15,12 +15,67 @@ window.addEventListener('message', function(e) {
     if (!e.data || cargandoCancion) return;
     try {
         var data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-        if (data.event === 'onStateChange' && data.info === 0) {
-            clearTimeout(duracionTimer);
-            siguienteCancion();
+        if (data.event === 'onStateChange') {
+            // 0=ended, 1=playing, 2=paused, 3=buffering, 5=cued
+            if (data.info === 0) {
+                clearTimeout(duracionTimer);
+                siguienteCancion();
+            } else if (data.info === 2 && !musicaPausada) {
+                // Pausa no solicitada por el usuario — la TV pausó sola. Reanudar.
+                setTimeout(function() {
+                    if (!musicaPausada && !cargandoCancion) {
+                        ytCmd('playVideo');
+                        ytCmd('unMute');
+                        ytCmd('setVolume', [volumenActual]);
+                    }
+                }, 400);
+            }
         }
     } catch(err) {}
 });
+
+// ===================== ANTI-PAUSA PARA TVs =====================
+var watchdogInterval = null;
+var wakeLock         = null;
+
+// Cada 15s le manda "play" al iframe. Si ya está sonando, es inofensivo.
+// Si la TV pausó el video por su cuenta, lo reanuda.
+function iniciarWatchdogMusica() {
+    if (watchdogInterval) return;
+    watchdogInterval = setInterval(function() {
+        if (!musicaSeleccionada || musicaPausada || cargandoCancion) return;
+        ytCmd('playVideo');
+        ytCmd('unMute');
+        ytCmd('setVolume', [volumenActual]);
+    }, 15000);
+}
+
+// Wake Lock impide que la TV entre en modo ahorro de energía mientras la app está abierta
+function pedirWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            navigator.wakeLock.request('screen').then(function(lock) {
+                wakeLock = lock;
+                lock.addEventListener('release', function() { wakeLock = null; });
+            }).catch(function() {});
+        }
+    } catch(e) {}
+}
+
+// Cuando la página vuelve a estar visible, reanudar música y re-pedir wake lock
+function escucharVisibilidad() {
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) return;
+        if (musicaSeleccionada && !musicaPausada) {
+            setTimeout(function() {
+                ytCmd('playVideo');
+                ytCmd('unMute');
+                ytCmd('setVolume', [volumenActual]);
+            }, 500);
+        }
+        if (!wakeLock) pedirWakeLock();
+    });
+}
 
 // Método 2: obtener duración real del video y poner un timer (funciona en TVs y cualquier navegador)
 function programarAvance(videoId) {
@@ -163,8 +218,12 @@ function reproducir() {
     if (!ytIframe) {
         ytIframe = document.createElement('iframe');
         ytIframe.setAttribute('allow', 'autoplay; encrypted-media');
-        ytIframe.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;border:none;bottom:0;left:0';
+        // Sin opacity:0 — las TVs pausan iframes "invisibles" para ahorrar recursos
+        ytIframe.style.cssText = 'position:fixed;width:4px;height:4px;border:none;bottom:0;left:0;pointer-events:none;z-index:-1';
         document.getElementById('yt-player').appendChild(ytIframe);
+        iniciarWatchdogMusica();
+        pedirWakeLock();
+        escucharVisibilidad();
     }
 
     // autoplay=1 + mute=1 → siempre permitido en Chrome, Brave y TVs

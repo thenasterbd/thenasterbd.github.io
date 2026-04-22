@@ -628,8 +628,8 @@ body {
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
+    width: 4px;
+    height: 4px;
     pointer-events: none;
+    z-index: -1;
 }
